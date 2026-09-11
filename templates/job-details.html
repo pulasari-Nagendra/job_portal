@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>JobSphere | Job Details</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        body {
+            background: #f7f8ff;
+        }
+
+        .details-page {
+            max-width: 1100px;
+            margin: 45px auto;
+            padding: 0 25px 70px;
+        }
+
+        .details-card {
+            background: white;
+            border-radius: 25px;
+            padding: 45px;
+            box-shadow: 0 15px 40px rgba(40, 45, 80, 0.08);
+        }
+
+        .details-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 25px;
+            align-items: flex-start;
+            margin-bottom: 35px;
+        }
+
+        .job-icon-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            background: #eeeaff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .details-top h1 {
+            font-size: 42px;
+            line-height: 1.15;
+            margin: 0 0 10px;
+        }
+
+        .company-name {
+            color: #6657f5;
+            font-size: 19px;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .details-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .details-tag {
+            background: #f2f3f8;
+            padding: 9px 13px;
+            border-radius: 9px;
+            color: #626a7d;
+        }
+
+        .apply-button {
+            border: none;
+            min-width: 175px;
+            padding: 15px 22px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #6657f5, #8c5df7);
+            color: white;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(102, 87, 245, 0.20);
+        }
+
+        .apply-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .apply-button.applied {
+            background: #e3f8ec;
+            color: #176b3a;
+            box-shadow: none;
+            cursor: default;
+        }
+
+        .apply-button.hidden {
+            display: none;
+        }
+
+        .detail-section {
+            margin-top: 38px;
+        }
+
+        .detail-section h2 {
+            font-size: 25px;
+            margin-bottom: 15px;
+        }
+
+        .detail-section p {
+            color: #697184;
+            line-height: 1.8;
+            white-space: pre-line;
+        }
+
+        .status-message {
+            margin-top: 28px;
+            padding: 15px 17px;
+            border-radius: 12px;
+            display: none;
+            font-weight: 600;
+        }
+
+        .status-message.success {
+            background: #e3f8ec;
+            color: #176b3a;
+        }
+
+        .status-message.error {
+            background: #ffe7e7;
+            color: #a32121;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #6657f5;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 70px;
+            color: #737b8d;
+        }
+
+        @media (max-width: 750px) {
+
+            .details-card {
+                padding: 28px;
+            }
+
+            .details-top {
+                flex-direction: column;
+            }
+
+            .details-top h1 {
+                font-size: 32px;
+            }
+
+            .apply-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+{% include 'navbar.html' %}
+
+<main class="details-page">
+
+    <a href="/jobs-page" class="back-link">
+        ← Back to Jobs
+    </a>
+
+    <div id="jobContainer">
+
+        <div class="loading">
+            Loading job details...
+        </div>
+
+    </div>
+
+</main>
+
+
+<script>
+
+const params = new URLSearchParams(window.location.search);
+const jobId = params.get("id");
+
+const token = localStorage.getItem("access_token");
+const storedUser = localStorage.getItem("user");
+
+let currentUser = null;
+
+if (storedUser) {
+    try {
+        currentUser = JSON.parse(storedUser);
+    } catch (error) {
+        currentUser = null;
+    }
+}
+
+
+async function loadJob() {
+
+    const container =
+        document.getElementById("jobContainer");
+
+    if (!jobId) {
+
+        container.innerHTML = `
+            <div class="details-card">
+                <h2>Job not found</h2>
+            </div>
+        `;
+
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(`/jobs/${jobId}`);
+
+        const job =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            container.innerHTML = `
+                <div class="details-card">
+                    <h2>Unable to load job</h2>
+                    <p>${escapeHtml(
+                        job.message || "Job not found"
+                    )}</p>
+                </div>
+            `;
+
+            return;
+        }
+
+
+        container.innerHTML = `
+
+            <div class="details-card">
+
+                <div class="details-top">
+
+                    <div>
+
+                        <div class="job-icon-large">
+                            💼
+                        </div>
+
+                        <h1>
+                            ${escapeHtml(job.title)}
+                        </h1>
+
+                        <div class="company-name">
+                            ${escapeHtml(job.company)}
+                        </div>
+
+                        <div class="details-tags">
+
+                            <span class="details-tag">
+                                📍 ${escapeHtml(job.location)}
+                            </span>
+
+                            <span class="details-tag">
+                                💼 ${escapeHtml(job.job_type)}
+                            </span>
+
+                            ${
+                                job.salary
+                                ? `
+                                    <span class="details-tag">
+                                        💰 ${escapeHtml(job.salary)}
+                                    </span>
+                                `
+                                : ""
+                            }
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        id="applyButton"
+                        class="apply-button"
+                        onclick="applyForJob()">
+
+                        Apply Now →
+
+                    </button>
+
+                </div>
+
+
+                <div class="detail-section">
+
+                    <h2>About the Job</h2>
+
+                    <p>
+                        ${escapeHtml(job.description)}
+                    </p>
+
+                </div>
+
+
+                <div class="detail-section">
+
+                    <h2>Requirements</h2>
+
+                    <p>
+                        ${escapeHtml(job.requirements)}
+                    </p>
+
+                </div>
+
+
+                <div
+                    id="statusMessage"
+                    class="status-message">
+                </div>
+
+            </div>
+        `;
+
+        // IMPORTANT:
+        // Check application status AFTER the button exists
+        await checkApplicationStatus();
+
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML = `
+            <div class="details-card">
+                <h2>Something went wrong</h2>
+                <p>Unable to load this job.</p>
+            </div>
+        `;
+    }
+}
+
+
+async function checkApplicationStatus() {
+
+    const button =
+        document.getElementById("applyButton");
+
+    if (!button) {
+        return;
+    }
+
+    // Not logged in
+    if (!token || !currentUser) {
+        return;
+    }
+
+    // Employer should not apply
+    if (currentUser.role === "employer") {
+        button.style.display = "none";
+        return;
+    }
+
+    // Only candidate needs this check
+    if (currentUser.role !== "candidate") {
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                `/application-status/${jobId}`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Authorization":
+                            "Bearer " + token
+                    }
+                }
+            );
+
+        const data =
+            await response.json();
+
+        console.log(
+            "Application status:",
+            data
+        );
+
+        if (!response.ok) {
+            return;
+        }
+
+        if (data.applied === true) {
+
+            button.textContent = "✓ Applied";
+            button.disabled = true;
+
+            button.classList.add("applied");
+
+        } else {
+
+            button.textContent = "Apply Now →";
+            button.disabled = false;
+
+            button.classList.remove("applied");
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Application status check failed:",
+            error
+        );
+    }
+}
+
+async function applyForJob() {
+
+    const button =
+        document.getElementById("applyButton");
+
+    const message =
+        document.getElementById("statusMessage");
+
+
+    // Not logged in
+    if (!token || !currentUser) {
+
+        window.location.href = "/login-page";
+
+        return;
+    }
+
+
+    // Employer
+    if (currentUser.role === "employer") {
+        return;
+    }
+
+
+    // Candidate
+    button.disabled = true;
+    button.textContent = "Applying...";
+
+
+    try {
+
+        const response =
+            await fetch(`/apply/${jobId}`, {
+
+                method: "POST",
+
+                headers: {
+                    "Authorization":
+                        "Bearer " + token
+                }
+            });
+
+
+        const data =
+            await response.json();
+
+
+        if (response.status === 201) {
+
+            button.textContent = "✓ Applied";
+            button.disabled = true;
+            button.classList.add("applied");
+
+            message.className =
+                "status-message success";
+
+            message.textContent =
+                "✅ Application submitted successfully!";
+
+            message.style.display = "block";
+
+            return;
+        }
+
+
+        if (response.status === 409) {
+
+            button.textContent = "✓ Applied";
+            button.disabled = true;
+            button.classList.add("applied");
+
+            message.className =
+                "status-message success";
+
+            message.textContent =
+                "You have already applied for this job.";
+
+            message.style.display = "block";
+
+            return;
+        }
+
+
+        message.className =
+            "status-message error";
+
+        message.textContent =
+            data.message || "Application failed";
+
+        message.style.display = "block";
+
+        button.disabled = false;
+        button.textContent = "Apply Now →";
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        message.className =
+            "status-message error";
+
+        message.textContent =
+            "Unable to connect to the server.";
+
+        message.style.display = "block";
+
+        button.disabled = false;
+        button.textContent = "Apply Now →";
+    }
+}
+
+function escapeHtml(value) {
+
+    if (value === null || value === undefined) {
+        return "";
+    }
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+loadJob();
+
+</script>
+
+</body>
+</html>

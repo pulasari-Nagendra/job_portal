@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>JobSphere | Find Your Next Opportunity</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+
+{% include 'navbar.html' %}
+
+<!-- HERO -->
+
+<section class="hero">
+
+    <div class="hero-left">
+
+        <div class="badge">
+            🚀 Start your career journey
+        </div>
+
+        <h1>
+            Find a job you
+            <span>actually love.</span>
+        </h1>
+
+        <p>
+            Discover internships, part-time jobs and full-time
+            opportunities from companies looking for talented people like you.
+        </p>
+
+
+        <!-- SEARCH -->
+
+        <div class="search-box">
+
+            <div class="search-field">
+                🔍
+                <input
+                    type="text"
+                    placeholder="Job title or keyword">
+            </div>
+
+            <div class="search-field">
+                📍
+                <input
+                    type="text"
+                    placeholder="Location">
+            </div>
+
+            <a href="/jobs-page" class="search-btn">
+                Search Jobs
+            </a>
+
+        </div>
+
+
+        <div class="quick-links">
+
+            <span>Popular:</span>
+
+            <a href="/jobs-page">Python</a>
+            <a href="/jobs-page">Java</a>
+            <a href="/jobs-page">Web Development</a>
+            <a href="/jobs-page">Internships</a>
+
+        </div>
+
+    </div>
+
+
+    <!-- HERO VISUAL -->
+
+    <div class="hero-right">
+
+        <div class="floating-card card-one">
+            💼
+            <div>
+                <strong>12K+</strong>
+                <small>Jobs available</small>
+            </div>
+        </div>
+
+        <div class="hero-circle">
+
+            <div class="person-icon">
+                👨‍💻
+            </div>
+
+        </div>
+
+        <div class="floating-card card-two">
+            ⭐
+            <div>
+                <strong>4.9/5</strong>
+                <small>User experience</small>
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- STATS -->
+
+<section class="stats">
+
+    <div>
+        <strong>10K+</strong>
+        <span>Active Jobs</span>
+    </div>
+
+    <div>
+        <strong>5K+</strong>
+        <span>Companies</span>
+    </div>
+
+    <div>
+        <strong>25K+</strong>
+        <span>Job Seekers</span>
+    </div>
+
+    <div>
+        <strong>8K+</strong>
+        <span>Successful Hires</span>
+    </div>
+
+</section>
+
+
+<!-- CATEGORIES -->
+
+<section class="section" id="categories">
+
+    <div class="section-heading">
+        <div>
+            <span class="section-tag">EXPLORE</span>
+            <h2>Popular Job Categories</h2>
+            <p>Find opportunities that match your skills.</p>
+        </div>
+
+        <a href="/jobs-page" class="view-all">
+            View all →
+        </a>
+    </div>
+
+
+    <div class="category-grid">
+
+        <a href="/jobs-page" class="category-card blue">
+            <div class="category-icon">💻</div>
+            <h3>Software Development</h3>
+            <p>1,240 jobs</p>
+        </a>
+
+        <a href="/jobs-page" class="category-card purple">
+            <div class="category-icon">🤖</div>
+            <h3>AI & Machine Learning</h3>
+            <p>850 jobs</p>
+        </a>
+
+        <a href="/jobs-page" class="category-card orange">
+            <div class="category-icon">📊</div>
+            <h3>Data & Analytics</h3>
+            <p>730 jobs</p>
+        </a>
+
+        <a href="/jobs-page" class="category-card green">
+            <div class="category-icon">🎨</div>
+            <h3>Design & Creative</h3>
+            <p>560 jobs</p>
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- TWO SIDES -->
+
+<section class="join-section" id="how-it-works">
+
+    <div class="join-card candidate">
+
+        <div class="join-icon">
+            👨‍🎓
+        </div>
+
+        <div>
+            <span class="section-tag">FOR CANDIDATES</span>
+
+            <h2>Find your dream job</h2>
+
+            <p>
+                Search thousands of opportunities, apply quickly
+                and track your applications in one place.
+            </p>
+
+            <a href="/signup-page" class="join-btn">
+                Find Jobs →
+            </a>
+        </div>
+
+    </div>
+
+
+    <div class="join-card employer">
+
+        <div class="join-icon">
+            🏢
+        </div>
+
+        <div>
+            <span class="section-tag">FOR EMPLOYERS</span>
+
+            <h2>Hire great talent</h2>
+
+            <p>
+                Post jobs, discover candidates and manage
+                applications from your dashboard.
+            </p>
+
+            <a href="/signup-page" class="join-btn">
+                Post a Job →
+            </a>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- CTA -->
+
+<section class="cta">
+
+    <div>
+        <h2>Your next opportunity is waiting.</h2>
+        <p>Join JobSphere and take the next step in your career.</p>
+    </div>
+
+    <a href="/signup-page">
+        Create Free Account →
+    </a>
+
+</section>
+
+
+<footer>
+
+    <div class="footer-logo">
+        <span>Job</span>Sphere
+    </div>
+
+    <p>
+        Connecting talent with opportunity.
+    </p>
+
+    <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/jobs-page">Jobs</a>
+        <a href="/login-page">Login</a>
+        <a href="/signup-page">Sign Up</a>
+    </div>
+
+</footer>
+
+</body>
+</html>

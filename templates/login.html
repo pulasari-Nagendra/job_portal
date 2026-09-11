@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>JobSphere | Login</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .auth-page {
+            min-height: calc(100vh - 76px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 50px 20px;
+
+            background:
+                radial-gradient(circle at 15% 20%, #e9e4ff 0, transparent 30%),
+                radial-gradient(circle at 85% 80%, #dff8ff 0, transparent 30%),
+                #f8f9ff;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 460px;
+            background: white;
+            padding: 42px;
+            border-radius: 25px;
+            box-shadow: 0 20px 55px rgba(40, 45, 80, 0.12);
+        }
+
+        .auth-card h1 {
+            font-size: 34px;
+            margin: 10px 0;
+        }
+
+        .auth-subtitle {
+            color: #737b8d;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #dfe2eb;
+            border-radius: 11px;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .form-group input:focus {
+            border-color: #6657f5;
+            box-shadow: 0 0 0 3px rgba(102, 87, 245, 0.10);
+        }
+
+        .login-submit {
+            width: 100%;
+            border: none;
+            padding: 15px;
+            margin-top: 8px;
+            border-radius: 11px;
+            background: linear-gradient(135deg, #6657f5, #8c5df7);
+            color: white;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .login-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .auth-message {
+            display: none;
+            margin-top: 18px;
+            padding: 13px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .auth-error {
+            background: #ffe7e7;
+            color: #a52121;
+        }
+
+        .auth-success {
+            background: #e3f8ec;
+            color: #176b3a;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #737b8d;
+        }
+
+        .auth-footer a {
+            color: #6657f5;
+            font-weight: 700;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="navbar">
+
+    <div class="logo">
+        <span>Job</span>Sphere
+    </div>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/jobs-page">Jobs</a>
+        <a href="/">Categories</a>
+        <a href="/">How it works</a>
+    </nav>
+
+    <div class="nav-actions">
+        <a href="/login-page" class="login-btn">Login</a>
+        <a href="/signup-page" class="signup-btn">Get Started</a>
+    </div>
+
+</header>
+
+
+
+<main class="auth-page">
+
+    <div class="auth-card">
+
+        <span class="section-tag">WELCOME BACK</span>
+
+        <h1>Login 👋</h1>
+
+        <p class="auth-subtitle">
+            Sign in to continue to your JobSphere account.
+        </p>
+
+
+        <form id="loginForm" onsubmit="loginUser(event)">
+
+            <div class="form-group">
+                <label for="email">Email</label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    autocomplete="email"
+                    placeholder="you@example.com"
+                    required>
+            </div>
+
+
+            <div class="form-group">
+                <label for="password">Password</label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    autocomplete="current-password"
+                    placeholder="Enter your password"
+                    required>
+            </div>
+
+
+            <button
+                type="submit"
+                class="login-submit"
+                id="loginButton">
+                Login →
+            </button>
+
+        </form>
+
+
+        <div id="message" class="auth-message"></div>
+
+
+        <div class="auth-footer">
+            Don't have an account?
+            <a href="/signup-page">Create one</a>
+        </div>
+
+    </div>
+
+</main>
+
+
+<script>
+async function loginUser(event) {
+
+    event.preventDefault();
+
+    console.log("LOGIN FUNCTION STARTED");
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    const button = document.getElementById("loginButton");
+    const message = document.getElementById("message");
+
+    button.disabled = true;
+    button.textContent = "Logging in...";
+
+    try {
+
+        const response = await fetch("/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email: email,
+                password: password
+            })
+        });
+
+        const data = await response.json();
+
+        console.log("LOGIN RESPONSE:", data);
+        console.log("STATUS:", response.status);
+
+        if (!response.ok) {
+
+            message.className = "auth-message auth-error";
+            message.textContent =
+                data.message || "Login failed";
+            message.style.display = "block";
+
+            button.disabled = false;
+            button.textContent = "Login →";
+
+            return;
+        }
+
+        // Save JWT
+        localStorage.setItem(
+            "access_token",
+            data.access_token
+        );
+
+        // Save user
+        localStorage.setItem(
+            "user",
+            JSON.stringify(data.user)
+        );
+
+        message.className = "auth-message auth-success";
+        message.textContent =
+            "Login successful! Redirecting...";
+        message.style.display = "block";
+
+        console.log("ROLE:", data.user.role);
+
+        if (data.user.role === "candidate") {
+
+            window.location.href =
+                "/candidate-dashboard";
+
+        } else if (data.user.role === "employer") {
+
+            window.location.href =
+                "/employer-dashboard";
+
+        } else {
+
+            window.location.href = "/";
+        }
+
+    } catch (error) {
+
+        console.error("LOGIN ERROR:", error);
+
+        message.className = "auth-message auth-error";
+        message.textContent =
+            "Unable to connect to the server.";
+        message.style.display = "block";
+
+        button.disabled = false;
+        button.textContent = "Login →";
+    }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+venv/
+.env
+__pycache__/
+*.pyc
+
+# Test request data
+employer-login.json
+employer.json
+job.json
+login.json
+signup.json
