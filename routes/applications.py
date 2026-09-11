@@ -353,8 +353,9 @@ def application_status(job_id):
         }), 200
 
     except Exception as e:
+        print("JOB APPLICATIONS ERROR:", repr(e))
 
         return jsonify({
-            "message": "Failed to check application status",
+            "message": "Failed to fetch job applications",
             "error": str(e)
-        }), 500
+        }),500
